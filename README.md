@@ -1,4 +1,4 @@
-# A knowledge base for computer control projects
+# Knowledge base for computer control projects
 
 ## Intro
 
