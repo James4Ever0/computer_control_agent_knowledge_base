@@ -1,5 +1,6 @@
 import chromadb
 from chromadb.config import Settings
+
 anonymous_settings = Settings(anonymized_telemetry=False)
 
 # setup Chroma in-memory, for easy prototyping. Can add persistence easily!
@@ -17,9 +18,12 @@ collection = client.get_or_create_collection(COLLECTION_NAME)
 # Add docs to the collection. Can also update and delete. Row-based API coming soon!
 # will not insert to the db if the id is duplicated
 collection.add(
-    documents=["This is document1", "This is document2"], # we handle tokenization, embedding, and indexing automatically. You can skip that and add your own embeddings as well
-    metadatas=[{"source": "notion"}, {"source": "google-docs"}], # filter on these!
-    ids=["doc1", "doc2"], # unique for each doc
+    documents=[
+        "This is document1",
+        "This is document2",
+    ],  # we handle tokenization, embedding, and indexing automatically. You can skip that and add your own embeddings as well
+    metadatas=[{"source": "notion"}, {"source": "google-docs"}],  # filter on these!
+    ids=["doc1", "doc2"],  # unique for each doc
 )
 
 # Query/search 2 most similar results. You can also .get by id

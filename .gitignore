@@ -1,6 +1,7 @@
 chroma
 db
 test_db
+main_db
 
 # whitelist based gitignore
 

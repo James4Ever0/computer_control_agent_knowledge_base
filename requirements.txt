@@ -1,5 +1,5 @@
 chromadb
-mem0ai # must be latest
+mem0ai==0.0.9 # must be latest
 ollama
 litellm[proxy]
 llama-index

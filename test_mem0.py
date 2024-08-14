@@ -1,23 +1,18 @@
 import os
 from secret import OLLAMA_EXTERNAL_BASEURL
-# import litellm
-# litellm.supports_function_calling = lambda _: True
+
 # os.environ["OLLAMA_HOST"] = "http://127.0.0.1:11434"
 os.environ["OLLAMA_HOST"] = OLLAMA_EXTERNAL_BASEURL
 
-os.environ['OPENAI_API_KEY'] = 'dummykey'
-# os.environ['OPENAI_API_BASE'] = ''
-# os.environ['OPENAI_MODEL_NAME'] = 'mixtral'
-
+os.environ["OPENAI_API_KEY"] = "dummykey"
 from mem0 import Memory
 
 config = {
     "embedder": {
         "provider": "ollama",
         "config": {
-            "model": "",
-            # "model": "mxbai-embed-large",
-        }
+            "model": "mxbai-embed-large",
+        },
     },
     "llm": {
         "provider": "ollama",
@@ -28,7 +23,7 @@ config = {
             # "model": "internlm/internlm2.5:1.8b-chat", # does not support tools
             "temperature": 0.5,
             "max_tokens": 2000,
-        }
+        },
     },
     # "llm": {
     #     "provider": "litellm",
@@ -45,17 +40,21 @@ config = {
             "collection_name": "test",
             "path": "test_db",
             # "embedding_model_dims": 1536,
-        }
-    }
+        },
+    },
 }
 
 m = Memory.from_config(config)
 
 # 1. Add: Store a memory from any unstructured text
-uploaded_memory = m.add("I am working on improving my tennis skills. Suggest some online courses.", user_id="alice", metadata={"category": "hobbies"}) # {"message": "ok"}
+uploaded_memory = m.add(
+    "I am working on improving my tennis skills. Suggest some online courses.",
+    user_id="alice",
+    metadata={"category": "hobbies"},
+)  # {"message": "ok"}
 
 # print(uploaded_memory)
-breakpoint()
+# breakpoint()
 
 # m.get_all()
 # memory_id = uploaded_memory['id']
@@ -72,4 +71,4 @@ related_memories = m.search(query="What are Alice's hobbies?", user_id="alice")
 # Retrieved memory --> 'Likes to play tennis on weekends'
 print("[*] Retrieved memory:")
 print(related_memories)
-
+# [{'id': '24c76f9e-ac4d-42a2-9f09-6b1ccd5a2465', 'memory': 'Improving tennis skills (current activity): Interested in online courses for tennis improvement (preference)', 'hash': 'd9be5aede3f0dab28f3ba19fdeade599', 'metadata': {'category': 'hobbies'}, 'score': 375.0532211123522, 'created_at': '2024-08-14T07:10:34.622102-07:00', 'updated_at': None, 'user_id': 'alice'}]
