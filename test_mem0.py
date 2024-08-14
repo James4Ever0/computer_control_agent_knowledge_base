@@ -53,6 +53,10 @@ uploaded_memory = m.add(
     metadata={"category": "hobbies"},
 )  # {"message": "ok"}
 
+m.add("https://github.com/james4ever/agi_computer_control")
+
+print("[*] All memories:")
+print(m.get_all())
 # print(uploaded_memory)
 # breakpoint()
 

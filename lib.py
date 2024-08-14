@@ -6,7 +6,7 @@ os.environ["OPENAI_API_KEY"] = "dummykey"
 import embedchain
 
 # docs: https://docs.embedchain.ai/
-def print_call_params(args, kwargs):
+def print_calling_params(args, kwargs):
     print("[*] Args:", args)
     print("[*] Kwargs:", kwargs)
 
@@ -18,10 +18,10 @@ class EmbedApp:
 
     def add(self, *args, **kwargs):
         print("[*] Adding to index:")
-        print_call_params(args, kwargs)
+        print_calling_params(args, kwargs)
         return self.app.add(*args, **kwargs)
 
     def query(self, *args, **kwargs) -> str:
         print("[*] Performing query:")
-        print_call_params(args, kwargs)
+        print_calling_params(args, kwargs)
         return self.app.query(*args, **kwargs)
