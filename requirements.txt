@@ -1,0 +1,9 @@
+chromadb
+mem0ai # must be latest
+ollama
+litellm[proxy]
+llama-index
+llama-index-readers-web
+# embedchain # require lower mem0ai
+html2text
+llama-index-llms-ollama
