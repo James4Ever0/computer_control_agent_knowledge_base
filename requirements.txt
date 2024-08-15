@@ -7,3 +7,5 @@ llama-index-readers-web
 # embedchain # require lower mem0ai
 html2text
 llama-index-llms-ollama
+spider_rs
+urlextract
