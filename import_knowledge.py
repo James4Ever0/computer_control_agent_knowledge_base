@@ -10,6 +10,7 @@ def import_all_urls(urls:list[str]):
             found_in_index = app.check_url_is_added(it)
             if found_in_index:
                 print('[*] Skipping added URL')
+                continue
             app.add(it, data_type="web_page")
         else:
             print("[*] Skipping empty URL")

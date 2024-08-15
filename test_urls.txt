@@ -2,3 +2,4 @@ https://github.com/X-PLUG/MobileAgent
 https://baai-agents.github.io/Cradle/
 https://github.com/Envedity/DAIA
 https://raw.githubusercontent.com/James4Ever0/notes/master/Cybergod-like%20Agents%2C%20General%20Computer%20Control.md
+https://github.com/showlab/Awesome-GUI-Agent
