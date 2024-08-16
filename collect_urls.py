@@ -45,6 +45,14 @@ def extract_arxiv_preprint_codes(text:str) -> list[str]:
     ret = ARXIV_PREPRINT_REGEX.findall(text)
     return ret
 
+def convert_arxiv_preprint_code_into_pdf_url(preprint_code:str):
+    numeric_code = preprint_code.split(':')[-1]
+    ret = f"https://arxiv.org/pdf/{numeric_code}"
+    return ret
+
+def convert_arxiv_pdf_url_into_html_url(pdf_url:str):
+    ret = pdf_url.replace('arxiv','ar5iv')
+    return ret
 
 def preprocess_text_for_url_extraction(text: str):
     ret = text
@@ -74,6 +82,12 @@ def test_all():
         arxiv_codes = extract_arxiv_preprint_codes(text)
         print('[*] Arxiv preprint codes:')
         print(arxiv_codes)
+        arxiv_pdf_urls = [convert_arxiv_preprint_code_into_pdf_url(it) for it in arxiv_codes]
+        print('[*] Arxiv PDF URLs:')
+        print(arxiv_pdf_urls)
+        arxiv_html_urls =  [convert_arxiv_pdf_url_into_html_url(it) for it in arxiv_pdf_urls]
+        print('[*] Arxiv HTML URLs:')
+        print(arxiv_html_urls)
 
 if __name__ == "__main__":
     test_all()

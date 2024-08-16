@@ -190,3 +190,5 @@ logs
 
 secrets.*
 secret.*
+test_*.json
+test_*.html
