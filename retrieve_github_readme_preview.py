@@ -6,7 +6,7 @@ def cleanup_text(text:str):
     for line in text.splitlines():
         line = line.strip()
         if line:
-            ret+= line+'\n'
+            ret += line+'\n'
     return ret
 
 filepath = "test_spider_rs_scrape_result.html"

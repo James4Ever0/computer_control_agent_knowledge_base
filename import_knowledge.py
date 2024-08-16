@@ -15,6 +15,8 @@ def import_all_urls(urls:list[str]):
                 print('[*] Skipping added URL')
                 continue
             app.add(it, data_type="web_page")
+            # crawl from raw page, then import as text
+            # app.add(page_content, data_type="text")
         else:
             print("[*] Skipping empty URL")
             continue
