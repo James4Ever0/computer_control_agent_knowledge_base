@@ -4,10 +4,11 @@ import re
 from typing import DefaultDict
 import requests
 from urllib.parse import urlparse, urlunparse
+import rich
 
 # you can check dns for eligible links
 
-ARXIV_PREPRINT_REGEX = re.compile(r"arXiv:\d+.\d+")
+ARXIV_PREPRINT_REGEX = re.compile(r"arXiv:\d+.[\da-zA-Z]+")
 IP_ADDRESS_REGEX = re.compile(r"\d+.\d+.\d+.\d+")
 URL_REGEX = re.compile(
     r"((((https?|ftps?|gopher|telnet|nntp)://)|(mailto:|news:))([-%()_.!~*';/?:@&=+$,A-Za-z0-9])+)"
@@ -16,9 +17,20 @@ URL_PREFIXES = ["https://", "http://"]
 WHITESPACE = " "
 EXTRACTOR = URLExtract()
 REMOVABLE_PUNCTUATIONS = ["(", ")", "'", '"']
-HOSTNAME_LOWERCASE_BLACKLIST = ["localhost", 'asp.net']
+HOSTNAME_LOWERCASE_BLACKLIST = [
+        "localhost", 
+        'asp.net', 
+        'img.shields.io', 
+        "discord.gg", 
+        "chatgpt.com",
+        "cdn.rawgit.com",
+        "patreon.com"
+]
+NETLOC_SUFFIX_LOWERCASE_BLACKLIST = ["md"]
 INDEX_HTML = "index.html"
 
+ARXIV_NETLOC = "arxiv.org"
+AR5IV_NETLOC = "ar5iv.org"
 
 def detect_loop_url(url: str):
     ret = False
@@ -169,14 +181,19 @@ def filter_unwanted_hosts_from_urls(urls: list[str]) -> list[str]:
     ret = []
 
     for it in urls:
-        print("[*] Filtering URL:", it)
+        # print("[*] Filtering URL:", it)
         netloc = get_url_netloc(it)
         hostname = netloc.split(":")[0]
-        if hostname.lower() in HOSTNAME_LOWERCASE_BLACKLIST:
-            print("[-] Skipping because host in blacklist")
+        hostname_lower = hostname.lower()
+        hostname_lower_suffix = hostname_lower.split(".")[-1]
+        if hostname_lower in HOSTNAME_LOWERCASE_BLACKLIST:
+            print("[-] Skipping because host in blacklist:", hostname_lower)
+            continue
+        elif hostname_lower_suffix in NETLOC_SUFFIX_LOWERCASE_BLACKLIST:
+            print("[-] SKipping because containing unwanted netloc suffix:", hostname_lower_suffix)
             continue
         elif check_is_ip_address(hostname):
-            print("[-] Skipping because host is IP address")
+            print("[-] Skipping because host is IP address:", hostname)
             continue
         else:
             # check if it is index.html variant
@@ -237,7 +254,7 @@ def collect_all_urls_from_database(app: EmbedApp) -> list[str]:
 
 
 def get_url_netloc(url:str):
-    url_parsed = urlparse(it)
+    url_parsed = urlparse(url)
     ret = url_parsed.netloc
     return ret
 
@@ -248,6 +265,22 @@ def group_urls_by_netloc(urls: list[str]) -> dict[str, list[str]]:
         ret[netloc].append(it)
     ret = dict(ret)
     return ret
+
+def extract_arxiv_codes_from_urls(arxiv_urls:list[str]):
+    ret = []
+    for it in arxiv_urls:
+        results = extract_arxiv_preprint_codes(it)
+        if results:
+            ret.append(results[0])
+    return ret
+
+def convert_arxiv_to_ar5iv(grouped_urls:dict[str, list[str]]):
+    arxiv_urls = grouped_urls[ARXIV_NETLOC]
+    arxiv_codes = extract_arxiv_codes_from_urls(arxiv_urls)
+    new_ar5iv_urls = [convert_arxiv_preprint_code_into_pdf_url(it) for it in arxiv_codes]
+    grouped_urls[AR5IV_NETLOC] = list(set(grouped_urls[AR5IV_NETLOC] + new_ar5iv_urls))
+    del grouped_urls[ARXIV_NETLOC]
+    return grouped_urls
 
 def test_collect_all_urls_from_database_and_export_to_file():
     # example_text = "Text with URLs. Let's have URL janlipovsky.cz as an example."
@@ -277,7 +310,23 @@ def test_filter_unwanted_hosts():
     export_filepath = "test_filter_host_urls.txt"
     save_urls_to_file(filtered_urls, export_filepath)
 
+def test_group_filtered_urls_by_netloc():
+    import_filepath = "test_filter_host_urls.txt"
+    urls = import_urls_from_file(import_filepath)
+    grouped_urls = group_urls_by_netloc(urls)
+    stats = []
+    for netloc, it in grouped_urls.items():
+        stats.append((netloc, len(it)))
+    # now, convert the grouped_urls.
+    grouped_urls = convert_arxiv_to_ar5iv(grouped_urls)
+    #stats.sort(key = lambda x: x[1])
+    export_urls = [it for netloc_urls in grouped_urls.values() for it in netloc_urls]
+    export_filepath = "test_grouped_urls_reprocessed.txt"
+    save_urls_to_file(export_urls, export_filepath)
+    #rich.print(stats)
 
 if __name__ == "__main__":
     # test_collect_all_urls_from_database_and_export_to_file()
-    test_categorize_collected_urls()
+    # test_categorize_collected_urls()
+    test_filter_unwanted_hosts()
+    test_group_filtered_urls_by_netloc()
