@@ -18,19 +18,20 @@ WHITESPACE = " "
 EXTRACTOR = URLExtract()
 REMOVABLE_PUNCTUATIONS = ["(", ")", "'", '"']
 HOSTNAME_LOWERCASE_BLACKLIST = [
-        "localhost", 
-        'asp.net', 
-        'img.shields.io', 
-        "discord.gg", 
-        "chatgpt.com",
-        "cdn.rawgit.com",
-        "patreon.com"
+    "localhost",
+    "asp.net",
+    "img.shields.io",
+    "discord.gg",
+    "chatgpt.com",
+    "cdn.rawgit.com",
+    "patreon.com",
 ]
 NETLOC_SUFFIX_LOWERCASE_BLACKLIST = ["md"]
 INDEX_HTML = "index.html"
 
 ARXIV_NETLOC = "arxiv.org"
 AR5IV_NETLOC = "ar5iv.org"
+
 
 def detect_loop_url(url: str):
     ret = False
@@ -190,7 +191,10 @@ def filter_unwanted_hosts_from_urls(urls: list[str]) -> list[str]:
             print("[-] Skipping because host in blacklist:", hostname_lower)
             continue
         elif hostname_lower_suffix in NETLOC_SUFFIX_LOWERCASE_BLACKLIST:
-            print("[-] SKipping because containing unwanted netloc suffix:", hostname_lower_suffix)
+            print(
+                "[-] SKipping because containing unwanted netloc suffix:",
+                hostname_lower_suffix,
+            )
             continue
         elif check_is_ip_address(hostname):
             print("[-] Skipping because host is IP address:", hostname)
@@ -253,10 +257,11 @@ def collect_all_urls_from_database(app: EmbedApp) -> list[str]:
     return ret
 
 
-def get_url_netloc(url:str):
+def get_url_netloc(url: str):
     url_parsed = urlparse(url)
     ret = url_parsed.netloc
     return ret
+
 
 def group_urls_by_netloc(urls: list[str]) -> dict[str, list[str]]:
     ret = DefaultDict(list)
@@ -266,7 +271,8 @@ def group_urls_by_netloc(urls: list[str]) -> dict[str, list[str]]:
     ret = dict(ret)
     return ret
 
-def extract_arxiv_codes_from_urls(arxiv_urls:list[str]):
+
+def extract_arxiv_codes_from_urls(arxiv_urls: list[str]):
     ret = []
     for it in arxiv_urls:
         results = extract_arxiv_preprint_codes(it)
@@ -274,13 +280,17 @@ def extract_arxiv_codes_from_urls(arxiv_urls:list[str]):
             ret.append(results[0])
     return ret
 
-def convert_arxiv_to_ar5iv(grouped_urls:dict[str, list[str]]):
+
+def convert_arxiv_to_ar5iv(grouped_urls: dict[str, list[str]]):
     arxiv_urls = grouped_urls[ARXIV_NETLOC]
     arxiv_codes = extract_arxiv_codes_from_urls(arxiv_urls)
-    new_ar5iv_urls = [convert_arxiv_preprint_code_into_pdf_url(it) for it in arxiv_codes]
+    new_ar5iv_urls = [
+        convert_arxiv_preprint_code_into_pdf_url(it) for it in arxiv_codes
+    ]
     grouped_urls[AR5IV_NETLOC] = list(set(grouped_urls[AR5IV_NETLOC] + new_ar5iv_urls))
     del grouped_urls[ARXIV_NETLOC]
     return grouped_urls
+
 
 def test_collect_all_urls_from_database_and_export_to_file():
     # example_text = "Text with URLs. Let's have URL janlipovsky.cz as an example."
@@ -310,6 +320,7 @@ def test_filter_unwanted_hosts():
     export_filepath = "test_filter_host_urls.txt"
     save_urls_to_file(filtered_urls, export_filepath)
 
+
 def test_group_filtered_urls_by_netloc():
     import_filepath = "test_filter_host_urls.txt"
     urls = import_urls_from_file(import_filepath)
@@ -319,11 +330,12 @@ def test_group_filtered_urls_by_netloc():
         stats.append((netloc, len(it)))
     # now, convert the grouped_urls.
     grouped_urls = convert_arxiv_to_ar5iv(grouped_urls)
-    #stats.sort(key = lambda x: x[1])
+    # stats.sort(key = lambda x: x[1])
     export_urls = [it for netloc_urls in grouped_urls.values() for it in netloc_urls]
     export_filepath = "test_grouped_urls_reprocessed.txt"
     save_urls_to_file(export_urls, export_filepath)
-    #rich.print(stats)
+    # rich.print(stats)
+
 
 if __name__ == "__main__":
     # test_collect_all_urls_from_database_and_export_to_file()

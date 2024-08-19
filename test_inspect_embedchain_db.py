@@ -1,4 +1,5 @@
 from lib import EmbedApp
+
 # from embedchain.app import DataSource
 # import json
 
@@ -32,13 +33,14 @@ from lib import EmbedApp
 
 # for metadata, document in zip(embed_data['metadatas'], embed_data['documents']):
 #     url = metadata['url']
-    
+
+
 def test():
     app = EmbedApp()
-    print('[*] Chroma Embeddings:')
+    print("[*] Chroma Embeddings:")
     embed_data = app.get_all_data_from_chromadb()
     print(embed_data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()

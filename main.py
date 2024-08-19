@@ -4,6 +4,7 @@
 from lib import EmbedApp
 import traceback
 
+
 def commandline_knowledge_base_chat():
     print("[*] Welcome to computer control agent knowledge base chat")
     app = EmbedApp()
@@ -20,8 +21,10 @@ def commandline_knowledge_base_chat():
             traceback.print_exc()
             print("[-] Exception happened while processing query")
 
+
 def main():
     commandline_knowledge_base_chat()
+
 
 if __name__ == "__main__":
     main()

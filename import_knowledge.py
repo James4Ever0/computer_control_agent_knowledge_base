@@ -5,12 +5,13 @@ import subprocess
 from bs4 import BeautifulSoup
 import re
 
-def cleanup_text(text:str):
+
+def cleanup_text(text: str):
     ret = ""
     for line in text.splitlines():
         line = line.strip()
         if line:
-            ret += line+'\n'
+            ret += line + "\n"
     return ret
 
 
@@ -18,11 +19,12 @@ def cleanup_text(text:str):
 # TODO: use github api to inspect repo and get major branch name, and readme file path
 
 WEBPAGE_TIMEOUT = 15
-ENCODING='utf-8'
+ENCODING = "utf-8"
 
-def add_webpage_url(app:EmbedApp, url:str, timeout=WEBPAGE_TIMEOUT):
-    try: # need timeotu
-        args=(it,)
+
+def add_webpage_url(app: EmbedApp, url: str, timeout=WEBPAGE_TIMEOUT):
+    try:  # need timeout
+        args = (url,)
         kwargs = dict(data_type="web_page")
         func_timeout(timeout, app.add, args=args, kwargs=kwargs)
         print(f"[+] Adding webpage '{url}' success")
@@ -32,13 +34,24 @@ def add_webpage_url(app:EmbedApp, url:str, timeout=WEBPAGE_TIMEOUT):
         traceback.print_exc()
         print(f"[-] Failed to add webpage '{url}'")
 
-def retrieve_html_from_url(url:str, timeout=WEBPAGE_TIMEOUT):
-    cmdlist = ['spider', '--url', url, 'scrape', '--depth', '1', '--output-html', '--block-images']
+
+def retrieve_html_from_url(url: str, timeout=WEBPAGE_TIMEOUT):
+    cmdlist = [
+        "spider",
+        "--url",
+        url,
+        "scrape",
+        "--depth",
+        "1",
+        "--output-html",
+        "--block-images",
+    ]
     ret = subprocess.check_output(cmdlist, timeout=timeout, encoding=ENCODING)
     return ret
 
-def extract_github_readme_from_html(html:str):
-    soup = BeautifulSoup(html, features='lxml')
+
+def extract_github_readme_from_html(html: str):
+    soup = BeautifulSoup(html, features="lxml")
 
     tag = "article"
     target_elem = soup.find(tag)
@@ -51,33 +64,36 @@ def extract_github_readme_from_html(html:str):
     print(readme_text)
     return readme_text
 
-def get_github_readme_from_url(url:str):
+
+def get_github_readme_from_url(url: str):
     html = retrieve_html_from_url(url)
     ret = extract_github_readme_from_html(html)
     return ret
 
-def add_readme_from_github_url(app:EmbedApp, url:str):
-    print('[*] Getting README from Github URL:', url)
+
+def add_readme_from_github_url(app: EmbedApp, url: str):
+    print("[*] Getting README from Github URL:", url)
     try:
         readme_text = get_github_readme_from_url(url)
         app.add(readme_text, data_type="text")
-        print('[+] README added')
+        print("[+] README added")
     except subprocess.TimeoutExpired:
         print("[-] Failed to get HTML within timeout")
     except:
         traceback.print_exc()
-        print('[-] Failed to add README')
+        print("[-] Failed to add README")
 
-def import_all_urls(urls:list[str]):
+
+def import_all_urls(urls: list[str]):
     app = EmbedApp()
     for index, it in enumerate(urls):
         print("[*] Progress:", f"{index+1}/{len(urls)}")
         it = it.strip()
         if it:
-            print('[*] Processing URL:', it)
+            print("[*] Processing URL:", it)
             found_in_index = app.check_url_is_added(it)
             if found_in_index:
-                print('[*] Skipping added URL')
+                print("[*] Skipping added URL")
                 continue
             add_webpage_url(app, it)
             # crawl from raw page, then import as text
@@ -87,15 +103,18 @@ def import_all_urls(urls:list[str]):
             print("[*] Skipping empty URL")
             continue
 
-def import_urls_from_file(filepath:str):
+
+def import_urls_from_file(filepath: str):
     print("[*] Loading URLs from file:", filepath)
-    urls = open(input_filepath, "r").read().strip().splitlines()
+    urls = open(filepath, "r").read().strip().splitlines()
     import_all_urls(urls)
+
 
 def main():
     input_filepath = "test_grouped_urls_reprocessed.txt"
     # input_filepath = "test_urls.txt"
     import_urls_from_file(input_filepath)
+
 
 if __name__ == "__main__":
     main()
