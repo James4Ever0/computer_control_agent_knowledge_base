@@ -218,6 +218,7 @@ def filter_unwanted_hosts_from_urls(urls: list[str]) -> list[str]:
 
 def collect_all_urls_from_database(app: EmbedApp) -> list[str]:
     ret = []
+    app = EmbedApp()
 
     for it in app.get_all_document_chunks():
         text = it["document"]
@@ -292,24 +293,40 @@ def convert_arxiv_to_ar5iv(grouped_urls: dict[str, list[str]]):
     return grouped_urls
 
 
+def process_with_categorize_collected_urls(urls: list[str]):
+    categorized_urls = categorize_collected_urls(urls)
+    for category, it in categorized_urls.items():
+        print("[*] Category:", category)
+        print("[*] URLs:", it)
+    urls_with_schema = categorized_urls["with_prefix"]
+    return urls_with_schema
+
+
+def process_with_group_urls_by_netloc(urls: list[str]):
+    grouped_urls = group_urls_by_netloc(urls)
+    stats = []
+    for netloc, it in grouped_urls.items():
+        stats.append((netloc, len(it)))
+    # now, convert the grouped_urls.
+    grouped_urls = convert_arxiv_to_ar5iv(grouped_urls)
+    # stats.sort(key = lambda x: x[1])
+    export_urls = [it for netloc_urls in grouped_urls.values() for it in netloc_urls]
+    return export_urls
+
+
 def test_collect_all_urls_from_database_and_export_to_file():
     # example_text = "Text with URLs. Let's have URL janlipovsky.cz as an example."
     print("[*] Fetching URLs:")
     export_url_path = "test_fetched_urls.txt"
-    app = EmbedApp()
-    urls = collect_all_urls_from_database(app)
+    urls = collect_all_urls_from_database()
     save_urls_to_file(urls, export_url_path)
 
 
 def test_categorize_collected_urls():
     import_filepath = "test_fetched_urls.txt"
     urls = import_urls_from_file(import_filepath)
-    categorized_urls = categorize_collected_urls(urls)
     export_filepath = "test_urls_with_schema.txt"
-    for category, it in categorized_urls.items():
-        print("[*] Category:", category)
-        print("[*] URLs:", it)
-    urls_with_schema = categorized_urls["with_prefix"]
+    urls_with_schema = process_with_categorize_collected_urls(urls)
     save_urls_to_file(urls_with_schema, export_filepath)
 
 
@@ -324,14 +341,7 @@ def test_filter_unwanted_hosts():
 def test_group_filtered_urls_by_netloc():
     import_filepath = "test_filter_host_urls.txt"
     urls = import_urls_from_file(import_filepath)
-    grouped_urls = group_urls_by_netloc(urls)
-    stats = []
-    for netloc, it in grouped_urls.items():
-        stats.append((netloc, len(it)))
-    # now, convert the grouped_urls.
-    grouped_urls = convert_arxiv_to_ar5iv(grouped_urls)
-    # stats.sort(key = lambda x: x[1])
-    export_urls = [it for netloc_urls in grouped_urls.values() for it in netloc_urls]
+    export_urls = process_with_group_urls_by_netloc(urls)
     export_filepath = "test_grouped_urls_reprocessed.txt"
     save_urls_to_file(export_urls, export_filepath)
     # rich.print(stats)
