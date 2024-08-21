@@ -314,6 +314,13 @@ def process_with_group_urls_by_netloc(urls: list[str]):
     return export_urls
 
 
+def run_all():
+    ret = collect_all_urls_from_database()
+    ret = process_with_categorize_collected_urls(ret)
+    ret = filter_unwanted_hosts_from_urls(ret)
+    ret = process_with_group_urls_by_netloc(ret)
+    return ret
+
 def test_collect_all_urls_from_database_and_export_to_file():
     # example_text = "Text with URLs. Let's have URL janlipovsky.cz as an example."
     print("[*] Fetching URLs:")
@@ -337,7 +344,7 @@ def test_filter_unwanted_hosts():
     export_filepath = "test_filter_host_urls.txt"
     save_urls_to_file(filtered_urls, export_filepath)
 
-
+ 
 def test_group_filtered_urls_by_netloc():
     import_filepath = "test_filter_host_urls.txt"
     urls = import_urls_from_file(import_filepath)
@@ -346,9 +353,14 @@ def test_group_filtered_urls_by_netloc():
     save_urls_to_file(export_urls, export_filepath)
     # rich.print(stats)
 
+def test_all():
+    export_filepath = "test_run_all.txt"
+    urls = run_all()
+    save_urls_to_file(urls, export_filepath)
 
 if __name__ == "__main__":
     # test_collect_all_urls_from_database_and_export_to_file()
     # test_categorize_collected_urls()
-    test_filter_unwanted_hosts()
-    test_group_filtered_urls_by_netloc()
+    # test_filter_unwanted_hosts()
+    # test_group_filtered_urls_by_netloc()
+    test_all() # this thing is stateful.
