@@ -4,7 +4,7 @@ import re
 from typing import DefaultDict
 import requests
 from urllib.parse import urlparse, urlunparse
-import rich
+# import rich
 
 # you can check dns for eligible links
 
@@ -36,10 +36,11 @@ AR5IV_NETLOC = "ar5iv.org"
 def detect_loop_url(url: str):
     ret = False
     url_len = len(url)
-    if url_len % 2 == 0:
-        # even length
-        left, right = url[: url_len / 2], url[url_len / 2 :]
-        ret = left == right
+    if url:
+        if url_len % 2 == 0:
+            # even length
+            left, right = url[: url_len // 2], url[url_len // 2 :]
+            ret = left == right
     return ret
 
 
@@ -216,7 +217,7 @@ def filter_unwanted_hosts_from_urls(urls: list[str]) -> list[str]:
     return ret
 
 
-def collect_all_urls_from_database(app: EmbedApp) -> list[str]:
+def collect_all_urls_from_database() -> list[str]:
     ret = []
     app = EmbedApp()
 
