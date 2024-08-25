@@ -193,7 +193,7 @@ def filter_unwanted_hosts_from_urls(urls: list[str]) -> list[str]:
             continue
         elif hostname_lower_suffix in NETLOC_SUFFIX_LOWERCASE_BLACKLIST:
             print(
-                "[-] SKipping because containing unwanted netloc suffix:",
+                "[-] Skipping because containing unwanted netloc suffix:",
                 hostname_lower_suffix,
             )
             continue

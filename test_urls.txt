@@ -23,3 +23,4 @@ https://github.com/tcostam/awesome-command-control
 https://github.com/StonyBrookNLP/appworld
 https://ar5iv.labs.arxiv.org/html/2202.08137
 https://github.com/langchain-ai/langgraph-studio
+https://github.com/e2b-dev/awesome-devins

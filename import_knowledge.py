@@ -3,7 +3,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 import traceback
 import subprocess
 from bs4 import BeautifulSoup
-import re
+# import re
 
 
 def cleanup_text(text: str):
@@ -20,7 +20,13 @@ def cleanup_text(text: str):
 
 WEBPAGE_TIMEOUT = 15
 ENCODING = "utf-8"
-
+REPLACE_MIRROR_PAIRS = [
+        ("huggingface.co", "hf-mirror.com"),
+]
+def replace_with_mirror_site(url:str):
+    for source, target in REPLACE_MIRROR_PAIRS:
+        url = url.replace(source, target)
+    return url
 
 def add_webpage_url(app: EmbedApp, url: str, timeout=WEBPAGE_TIMEOUT):
     try:  # need timeout
@@ -103,15 +109,29 @@ def import_all_urls(urls: list[str]):
             print("[*] Skipping empty URL")
             continue
 
+def filter_urls(urls:list[str]):
+    ret = []
+    added_urls_lowercase_set = set()
+    for it in urls:
+        it = it.strip(".")
+        it = replace_with_mirror_site(it)
+        url_lower = it.lower()
+        if url_lower not in added_urls_lowercase_set:
+            added_urls_lowercase_set.add(url_lower)
+            ret.append(it)
+    return ret
 
 def import_urls_from_file(filepath: str):
     print("[*] Loading URLs from file:", filepath)
     urls = open(filepath, "r").read().strip().splitlines()
+    urls = filter_urls(urls)
     import_all_urls(urls)
 
 
 def main():
-    input_filepath = "test_grouped_urls_reprocessed.txt"
+    # input_filepath = "devon_agents_urls.txt"
+    input_filepath = "test_run_all.txt"
+    # input_filepath = "test_grouped_urls_reprocessed.txt"
     # input_filepath = "test_urls.txt"
     import_urls_from_file(input_filepath)
 

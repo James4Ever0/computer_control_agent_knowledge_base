@@ -34,9 +34,10 @@ class EmbedApp:
     def check_url_is_added(self, url: str) -> bool:
         embed_data = self.get_all_data_from_chromadb()
         for metadata in embed_data["metadatas"]:
-            added_url = metadata["url"]
-            if url == added_url:
-                return True
+            if type(metadata) == dict:
+                added_url = metadata.get("url", None)
+                if url == added_url:
+                    return True
         return False
 
     def get_all_document_chunks(self) -> list[dict[str, str]]:
