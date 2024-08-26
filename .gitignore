@@ -193,3 +193,5 @@ secret.*
 test_*.txt
 test_*.json
 test_*.html
+
+releases
