@@ -1,4 +1,6 @@
-# Knowledge base for computer control projects
+<h1 align="center">Knowledge base for computer control projects</h1>
+
+<img src="./assets/demo.png" alt="Demo">
 
 ## Intro
 
