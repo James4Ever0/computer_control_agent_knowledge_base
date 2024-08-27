@@ -1,6 +1,7 @@
 import os
 from secret import OLLAMA_EXTERNAL_BASEURL
 from typing import DefaultDict
+import uuid
 
 os.environ["OLLAMA_HOST"] = OLLAMA_EXTERNAL_BASEURL
 os.environ["OPENAI_API_KEY"] = "dummykey"
@@ -39,12 +40,22 @@ class EmbedApp:
                 if url == added_url:
                     return True
         return False
-
+    @staticmethod
+    def get_url_from_metadata(metadata):
+        ret = None
+        if type(metadata) == dict:
+            if "url" in metadata.keys():
+                ret = metadata['url']
+        if type(ret) != str:
+            ret = str(uuid.uuid4())
+        return ret
+    
     def get_all_document_chunks(self) -> list[dict[str, str]]:
         ret = []
         embed_data = self.get_all_data_from_chromadb()
         for metadata, document in zip(embed_data["metadatas"], embed_data["documents"]):
-            url = metadata["url"]
+            # url = metadata.get("url", None)
+            url = self.get_url_from_metadata(metadata)
             ret.append(dict(url=url, document=document))
         return ret
 

@@ -81,7 +81,7 @@ def add_readme_from_github_url(app: EmbedApp, url: str):
     print("[*] Getting README from Github URL:", url)
     try:
         readme_text = get_github_readme_from_url(url)
-        app.add(readme_text, data_type="text")
+        app.add(readme_text, data_type="text", metadata=dict(url=url))
         print("[+] README added")
     except subprocess.TimeoutExpired:
         print("[-] Failed to get HTML within timeout")
